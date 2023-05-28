@@ -1,7 +1,8 @@
-tensorflow
+pip==23.1.2
 requests
-beautifulsoup4
 streamlit
-nltk
+Pillow
+torch
+torchvision
 transformers
-sentencepiece
+beautifulsoup4
