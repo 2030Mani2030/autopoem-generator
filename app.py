@@ -7,7 +7,7 @@ from nltk.tokenize import word_tokenize
 from transformers import TFT5ForConditionalGeneration, T5Tokenizer
 
 # Load the T5 model and tokenizer
-model_name = "t5-small"
+model_name = "t5-base"
 model = TFT5ForConditionalGeneration.from_pretrained(model_name)
 tokenizer = T5Tokenizer.from_pretrained(model_name, model_max_length=512)
 
@@ -35,8 +35,12 @@ def generate_caption(image):
     return caption[0]
 
 # Function to scrape poem from the website based on the caption
-def scrape_poem_from_caption(caption):
-    response = requests.get("https://www.aipoemgenerator.org/")
+def scrape_poem_from_website(caption):
+    payload = {
+        "input_text": caption,
+        "button": "Generate Poem"
+    }
+    response = requests.post("https://www.aipoemgenerator.org", data=payload)
     soup = BeautifulSoup(response.text, 'html.parser')
     poem = soup.find('textarea', class_='block w-full rounded-lg border disabled:cursor-not-allowed disabled:opacity-50 bg-gray-50 border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 w-full', id='message').text.strip()
     return poem
@@ -51,7 +55,7 @@ def main():
     if st.button("Generate Poem"):
         image = preprocess_image_from_url(image_url)
         caption = generate_caption(image)
-        poem = scrape_poem_from_caption(caption)
+        poem = scrape_poem_from_website(caption)
         st.subheader("Generated Poem:")
         st.write(poem)
 
@@ -64,7 +68,7 @@ def main():
 
         if st.button("Generate Poem"):
             caption = generate_caption(image)
-            poem = scrape_poem_from_caption(caption)
+            poem = scrape_poem_from_website(caption)
             st.subheader("Generated Poem:")
             st.write(poem)
 
